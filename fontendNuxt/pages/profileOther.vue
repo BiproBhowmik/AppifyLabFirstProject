@@ -145,7 +145,7 @@
                           </button>
                         </li>
                         <li class="_2banner_options_items">
-                          <button class="_3btn" type="button">
+                          <button @click="isChatBox = true" class="_3btn" type="button">
                             <svg
                               class="_btn_img"
                               xmlns="http://www.w3.org/2000/svg"
@@ -592,6 +592,7 @@ import Feed from "~/components/timeLine.vue";
 import rightSection from "~/components/rightSection.vue";
 import ProfileBanner from "~/components/profileBanner.vue";
 const axios = require("axios");
+const io = require("socket.io-client");
 
 export default {
   components: {
@@ -654,6 +655,12 @@ export default {
 
   created() {
     this.createdMethods();
+
+    // var socket = io();
+
+    // socket.on('chat message', function(msg) {
+    //   console.log(msg);
+    //   });
 
     var self = this;
     var self2 = this;

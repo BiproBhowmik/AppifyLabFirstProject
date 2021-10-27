@@ -114,7 +114,7 @@
         </ul>
       </div>
 
-      <div class="_sidebar_list_main">
+      <!-- <div class="_sideb/ar_list_main">
         <p class="_sidebar_list_title">Explore</p>
 
         <ul class="_sidebar_list">
@@ -143,7 +143,7 @@
             </router-link>
           </li>
         </ul>
-      </div>
+      </div> -->
 
       <div class="_sidebar_list_main">
         <p class="_sidebar_list_title">Discover</p>
@@ -157,7 +157,7 @@
               <p class="_sidebar_list_text">people</p>
             </router-link>
           </li>
-          <li>
+          <!-- <li>
             <router-link to="/groupList">
               <p class="_sidebar_list_icon"><i class="fas fa-users"></i></p>
               <p class="_sidebar_list_text">groups</p>
@@ -176,7 +176,7 @@
               </p>
               <p class="_sidebar_list_text">events</p>
             </router-link>
-          </li>
+          </li> -->
         </ul>
       </div>
 
@@ -184,7 +184,7 @@
         <p class="_sidebar_list_title">Technical</p>
 
         <ul class="_sidebar_list">
-          <li>
+          <!-- <li>
             <router-link to="/advertise">
               <p class="_sidebar_list_icon">
                 <i class="fas fa-globe-asia"></i>
@@ -197,7 +197,7 @@
               <p class="_sidebar_list_icon"><i class="fas fa-users"></i></p>
               <p class="_sidebar_list_text">Support</p>
             </router-link>
-          </li>
+          </li> -->
           <li>
             <router-link to="">
               <p class="_sidebar_list_icon"><i class="fas fa-flag"></i></p>
