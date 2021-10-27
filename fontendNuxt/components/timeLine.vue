@@ -1130,7 +1130,7 @@ const axios = require("axios");
 export default {
   computed: {
     ...mapGetters({
-      allPosts: "getAllPosts",
+      allPosts: "getAllPostsByCurrentAuthUser",
       currentUserInfo: "getAuthUser"
     })
   },
@@ -1267,13 +1267,13 @@ export default {
   beforeCreate() {
     // this.$store.dispatch("nuxtServerInit");
     axios
-      .get("http://localhost:3333/showAllPosts")
+      .post("http://localhost:3333/showAllPostsByUser", this.$store.state.authUser)
       .then(response => {
         // handle success
         //self.posts = response.data
         // this.incomeCategories = response.data;
         // this.allPosts = response.data;
-        this.$store.commit("setAllPosts", response.data);
+        this.$store.commit("setAllPostsByCurrentAuthUser", response.data);
         // console.log(response.data)
 
         response.data.forEach(post => {

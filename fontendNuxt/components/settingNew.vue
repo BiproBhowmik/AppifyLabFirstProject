@@ -21,20 +21,22 @@
                                         <div class="_1input_group">
                                             <p class="_1label">Email Address</p>
 
-                                            <Input placeholder="Email Address" value="mineaflorin25@gmail.com" />
+                                            <Input type="email" placeholder="Email Address"
+                                            v-model="emailUsername.email" />
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-12 col-lg-12">
                                         <div class="_1input_group">
                                             <p class="_1label">User Name</p>
 
-                                            <Input value="marianaleasijd" placeholder="User Name" />
+                                            <Input 
+                                            v-model="emailUsername.user_name" placeholder="User Name" />
                                         </div>
                                     </div>
                                     
                                     <div class="col-12 col-md-12 col-lg-12">
                                         <div class="_advertise_step_button">
-                                            <button @click="current = 1" class="_1btn _btn_150">Save Changes</button>
+                                            <button @click="changeEmailUserName" class="_1btn _btn_150">Save Changes</button>
                                         </div>
                                     </div>
                                 </div>
@@ -50,7 +52,7 @@
 </template>
 
 <script>
-import settingLeft from './settingLeft.vue'
+import settingLeft from '~/components/settingLeft.vue'
 
 export default {
   components: {
@@ -60,12 +62,32 @@ export default {
   data(){
     return{
       edit_Profile: false,
-      isSecurity: false
+      isSecurity: false,
+
+      emailUsername: {
+          email: this.$store.state.authUser.email,
+          user_name: this.$store.state.authUser.user_name,
+          id: this.$store.state.authUser.id
+      }
     }
   },
 
   methods:{
-    
+    async changeEmailUserName(){
+        
+        if (this.emailUsername.user_name != "" &&
+          this.emailUsername.email != "") {
+            const res = await this.callApi(
+              "post",
+              "http://localhost:3333/updateEmailUsername",
+              this.emailUsername
+            );
+            if (res.status == 200) {
+              // this.$router.push("/logIn")
+              console.log(res);
+            }
+        }
+    }
   },
   
   created(){

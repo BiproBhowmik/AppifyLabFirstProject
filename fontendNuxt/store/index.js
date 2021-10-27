@@ -9,7 +9,9 @@ export const strict = false;
 export const state = () => ({
   userInfo: {},
   allPosts: [],
-  authUser: false
+  allPostsByCurrentAuthUser: [],
+  authUser: false,
+  userProfileInfo: false
 });
 
 // common getters
@@ -20,8 +22,14 @@ export const getters = {
   getAllPosts(state) {
     return state.allPosts;
   },
+  getAllPostsByCurrentAuthUser(state) {
+    return state.allPostsByCurrentAuthUser;
+  },
   getAuthUser(state) {
     return state.authUser;
+  },
+  getUserProfileInfo(state) {
+    return state.userProfileInfo;
   }
 };
 
@@ -30,11 +38,20 @@ export const mutations = {
   setUserInfo(state, data) {
     state.userInfo = data;
   },
+  setUserProfileInfo(state, data) {
+    state.userProfileInfo = data;
+  },
   setAllPosts(state, data) {
     state.allPosts = data;
   },
+  setAllPostsByCurrentAuthUser(state, data) {
+    state.allPostsByCurrentAuthUser = data;
+  },
   setAuthUser(state, data) {
     state.authUser = data;
+  },
+  removePost(state, index) {
+    state.allPosts.splice(index, 1);
   }
 };
 

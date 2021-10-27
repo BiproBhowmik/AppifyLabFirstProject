@@ -4,6 +4,7 @@ import { BaseModel, column, belongsTo, BelongsTo, hasMany, HasMany } from '@ioc:
 import User from 'App/Models/User'
 import Like from 'App/Models/Like'
 import Comment from 'App/Models/Comment'
+import PostImage from 'App/Models/PostImage'
 
 export default class Post extends BaseModel {
   @column({ isPrimary: true })
@@ -29,4 +30,7 @@ export default class Post extends BaseModel {
 
   @hasMany(() => Comment)
   public comment: HasMany<typeof Comment>
+
+  @hasMany(() => PostImage)
+  public postImage: HasMany<typeof PostImage>
 }

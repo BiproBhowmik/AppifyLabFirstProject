@@ -78,7 +78,7 @@
 
                         <!-- Menu -->
                         <ul class="_list_menu">
-                            <li class="_active">My friends</li>
+                            <li class="_active">All Peoples</li>
                             <li>Discover</li>
                         </ul>
                         <!-- Menu -->
@@ -86,22 +86,31 @@
                         <div class="_list_cards_all">
                             <div class="row">
                                 <!-- Card -->
-                                <div class="col-12 col-md-6 col-lg-4 _mar_b30" v-for="(items, index) in 6" :key="index">
+                                <div class="col-12 col-md-6 col-lg-4 _mar_b30" v-for="(items, index) in allPeoples" :key="index">
+                                    
                                     <div class="_list_cards">
                                         <div class="_listPeo_cards_pic">
-                                            <img class="_listPeo_cards_img" src="/static/img/male.jpg" alt="" title="">
+                                            <img class="_listPeo_cards_img" :src="'http://localhost:3333/uploads/' + items.profile_picture " alt="" title="">
                                         </div>
 
                                         <div class="_list_cards_details">
-                                            <h2 class="_list_cards_title">Teal Swan Official</h2>
+                                            <h2 class="_list_cards_title"> {{ items.first_name }} {{ items.last_name }} </h2>
 
-                                            <p class="_list_cards_text _2text_overflow">Sduis porttito nulla maurisve cras cusut porta dapibus. Dis netus aenean arcu mauris varius temporse laoree</p>
+                                            <!-- <p class="_list_cards_text _2text_overflow">Sduis porttito nulla maurisve cras cusut porta dapibus. Dis netus aenean arcu mauris varius temporse laoree</p> -->
 
-                                            <p class="_list_cards_follow">121,862 followers</p>
+                                            <p class="_list_cards_follow">{{ items.user_name }}</p>
 
-                                            <div class="_list_cards_button">
+                                            <div v-if="items.id == $store.state.authUser.id" class="_list_cards_button">
                                                 <router-link to="/profile"><button class="_2btn _btn_long" type="button">View Profile</button></router-link>
                                             </div>
+                                            
+                                            <div v-else class="_list_cards_button">
+                                                <button @click="goToOtherProfile(items)" class="_2btn _btn_long" type="button">View Profile</button>
+                                                <!-- <nuxt-link :to="{ name: 'profileOther', params: items}">
+                                                    <button class="_2btn _btn_long" type="button">View Profile</button></nuxt-link> -->
+                                                
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -119,7 +128,7 @@
 
 <script>
 import leftSidebar from './leftSidebar.vue'
-
+const axios = require("axios");
 export default {
   components: {
     leftSidebar,
@@ -128,12 +137,30 @@ export default {
   data(){
     return{
       isloaded: false,
-      isHide: true
+      isHide: true,
+      allPeoples: []
     }
   },
 
   methods:{
-    
+    async goToOtherProfile(specificUserInfo){
+        const res = await this.callApi(
+          "post",
+          "http://localhost:3333/createSession",
+          specificUserInfo
+        );
+        
+        const resg = await this.callApi(
+          "get",
+          "http://localhost:3333/getSession"
+        );
+
+        console.log(resg);
+        
+       
+        // this.$store.commit("setUsrProfileInfo", specificUserInfo);
+        this.$router.push("/profileOther");
+    }
   },
   
   created(){
@@ -147,6 +174,20 @@ export default {
           self2.isHide = false;
         })
     }, 1500);
+  },
+  beforeCreate(){
+      axios
+      .get("http://localhost:3333/showAllUsers")
+      .then(response => {
+
+        this.allPeoples = response.data
+
+        //console.log(response);
+      })
+      .catch(error => {
+        // handle error
+        console.log(error);
+      });
   }
 }
 </script>

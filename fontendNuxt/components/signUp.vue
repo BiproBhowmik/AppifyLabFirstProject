@@ -38,6 +38,28 @@
       <h2 class="_log_form_title">Sign Up</h2>
 
       <div class="_log_form">
+        <VueFileAgent
+          ref="vueFileAgent"
+          :theme="'list'"
+          :multiple="false"
+          :deletable="true"
+          :meta="true"
+          :accept="'image/*'"
+          :maxSize="'10MB'"
+          :maxFiles="14"
+          :helpText="'Choose profile image'"
+          :errorText="{
+            type: 'Invalid file type. Only images or zip Allowed',
+            size: 'Files should not exceed 10MB in size'
+          }"
+          @select="filesSelected($event)"
+          @beforedelete="onBeforeDelete($event)"
+          @delete="fileDeleted($event)"
+          v-model="fileRecords"
+        ></VueFileAgent>
+        <!-- <button :disabled="!fileRecordsForUpload.length" @click="uploadFiles()">
+    Upload {{ fileRecordsForUpload.length }} files
+  </button> -->
         <div class="_log_input_group">
           <input
             v-model.trim="signUpObj.first_name"
@@ -86,6 +108,7 @@
             type="password"
           />
         </div>
+
         <div class="_log_input_group">
           <select v-model="signUpObj.gender" class="_1select">
             <option selected="true" disabled>Gender</option>
@@ -121,6 +144,13 @@
 
 <script lang="ts">
 import Vue from "vue";
+import VueFileAgent from "vue-file-agent";
+import VueFileAgentStyles from "vue-file-agent/dist/vue-file-agent.css";
+
+Vue.use(VueFileAgent);
+
+const axios = require("axios");
+
 export default Vue.extend({
   data() {
     return {
@@ -133,10 +163,60 @@ export default Vue.extend({
         confirm_password: "",
         gender: "",
         TPcondition: false
-      }
+      },
+      fileRecords: [],
+      uploadUrl: "http://localhost:3333/storeUser",
+      uploadHeaders: { "X-Test-Header": "vue-file-agent" },
+      fileRecordsForUpload: []
     };
   },
   methods: {
+    uploadFiles: function() {
+      //   return console.log(this.fileRecordsForUpload[0].file);
+      // Using the default uploader. You may use another uploader instead.
+      this.$refs.vueFileAgent.upload(
+        this.uploadUrl,
+        this.uploadHeaders,
+        this.fileRecordsForUpload
+      );
+
+      this.fileRecordsForUpload = [];
+    },
+    deleteUploadedFile: function(fileRecord) {
+      // Using the default uploader. You may use another uploader instead.
+      this.$refs.vueFileAgent.deleteUpload(
+        this.uploadUrl,
+        this.uploadHeaders,
+        fileRecord
+      );
+    },
+    filesSelected: function(fileRecordsNewlySelected) {
+      var validFileRecords = fileRecordsNewlySelected.filter(
+        fileRecord => !fileRecord.error
+      );
+      this.fileRecordsForUpload = this.fileRecordsForUpload.concat(
+        validFileRecords
+      );
+    },
+    onBeforeDelete: function(fileRecord) {
+      var i = this.fileRecordsForUpload.indexOf(fileRecord);
+      if (i !== -1) {
+        this.fileRecordsForUpload.splice(i, 1);
+      } else {
+        if (confirm("Are you sure you want to delete?")) {
+          this.$refs.vueFileAgent.deleteFileRecord(fileRecord); // will trigger 'delete' event
+        }
+      }
+    },
+    fileDeleted: function(fileRecord) {
+      var i = this.fileRecordsForUpload.indexOf(fileRecord);
+      if (i !== -1) {
+        this.fileRecordsForUpload.splice(i, 1);
+      } else {
+        this.deleteUploadedFile(fileRecord);
+      }
+    },
+
     async signUp() {
       if (this.signUpObj.TPcondition) {
         if (
@@ -148,15 +228,43 @@ export default Vue.extend({
           this.signUpObj.confirm_password != ""
         ) {
           if (this.signUpObj.password == this.signUpObj.confirm_password) {
-            const res = await this.callApi(
-              "post",
-              "http://localhost:3333/storeUser",
-              this.signUpObj
-            );
-            if (res.status == 200) {
-              this.$router.push("/logIn")
-              console.log("Done");
-            }
+            this.fileRecords.forEach((file, index) => {
+              //create a form data
+              let formData = new FormData();
+              //add input file and append the file object ( file.file )
+              formData.append("files", file.file);
+              formData.append("first_name", this.signUpObj.first_name);
+              formData.append("last_name", this.signUpObj.last_name);
+              formData.append("user_name", this.signUpObj.user_name);
+              formData.append("email", this.signUpObj.email);
+              formData.append("password", this.signUpObj.password);
+              formData.append("gender", this.signUpObj.gender);
+              //post form to your endpoint adding the content type headers
+              //   const res = await this.callApi('post',uploadUrl, this.form)
+              axios
+                .post(this.uploadUrl, formData, {
+                  headers: {
+                    "Content-Type": "multipart/form-data"
+                  }
+                })
+                .then(response => {
+                  //remove entry from the array
+                  this.fileRecords.splice(index, 1);
+                  this.fileRecordsForUpload = [];
+                  this.$router.push("/logIn");
+                  //  console.log ( response )
+                });
+            });
+
+            // const res = await this.callApi(
+            //   "post",
+            //   "http://localhost:3333/storeUser",
+            //   this.signUpObj
+            // );
+            // if (res.status == 200) {
+            //   // this.$router.push("/logIn")
+            //   console.log(res);
+            // }
           }
         }
       }

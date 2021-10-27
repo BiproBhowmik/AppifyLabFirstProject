@@ -13,7 +13,11 @@
     "@nuxtjs/auth-next": "5.0.0-1624817847.21691f1",
     "@nuxtjs/axios": "^5.13.6",
     "iview": "^3.5.4",
-    "nuxt": "^2.13.0"
+    "nuxt": "^2.13.0",
+    "pusher": "^5.0.0",
+    "socket.io-client": "^4.3.2",
+    "view-design": "^4.7.0-beta.10",
+    "vue-file-agent": "^1.7.3"
   },
   "devDependencies": {
     "fibers": "^5.0.0",

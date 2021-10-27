@@ -17,7 +17,7 @@
                         <div class="_photo_menu_top">
                             <div class="_photo_menu">
                                 <ul class="_photo_menu_list">
-                                    <li @click="clickAlbum" :class="album ? '_active': ''">Albums</li> 
+                                    <!-- <li @click="clickAlbum" :class="album ? '_active': ''">Albums</li>  -->
                                     <li @click="clickPhoto" :class="photo ? '_active': ''">Photos</li>
                                 </ul>
                             </div> 
@@ -29,7 +29,7 @@
                         <!-- Albums -->
                         <div v-if="album" class="_photo_albums_all">
                             <!-- Items -->
-                            <div class="_photo_albums_card" v-for="(items, index) in 15" :key="index">
+                            <div class="_photo_albums_card" v-for="(items, index) in 2" :key="index">
                                 <div class="_photo_albums_card_pic _load_div">
                                     <a href="" class="_photo_albums_card_pic_link">
                                         <img alt="" title="" class="_photo_albums_card_img" src="/static/img/file_1607448700853.jpg">
@@ -50,12 +50,15 @@
                         <!-- Photos -->
                         <div v-if="photo" class="_photo_main_all">
                             <!-- Items -->
-                            <div class="_photo_main" v-for="(items, index) in 15" :key="index">
-                                <div class="_photo_main_pic _load_div">
-                                    <img alt="" title="" class="_photo_main_img" src="/static/img/image_1608226845923.jpeg">
-                                </div>
-                                <div class="_photo_main_delete">
-                                    <i class="fa fa-trash"></i>
+                            <div class="_photo_main" v-for="(items, index) in $store.state.authUser.post" :key="index">
+                                <div v-for="(images, i) in items.postImage" :key="i">
+                                    <div class="_photo_main_pic _load_div">
+                                        <img alt="" title="" class="_photo_main_img" 
+                                        :src="'http://localhost:3333/uploads/' + images.post_image">
+                                    </div>
+                                    <div class="_photo_main_delete">
+                                        <i class="fa fa-trash"></i>
+                                    </div>
                                 </div>
                             </div>
                             <!-- Items -->
@@ -79,8 +82,9 @@ export default {
   
   data(){
     return{
-      album: true,
-      photo: false
+    //   album: true,
+    //   photo: false
+      photo: true
     }
   },
 
@@ -91,7 +95,7 @@ export default {
     },
 
     clickPhoto(){
-        this.album = false
+        // this.album = false
         this.photo = true
     }
   },

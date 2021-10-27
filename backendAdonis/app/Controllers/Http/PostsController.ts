@@ -4,43 +4,17 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 // import Application from '@ioc:Adonis/Core/Application'
 
 import Post from 'App/Models/Post'
+import PostImage from 'App/Models/PostImage'
+import Drive from '@ioc:Adonis/Core/Drive'
 
 export default class PostsController {
   public async store({ request }: HttpContextContract) {
-    // const profileImage = request.file('profile_picture')
-
-    // var imageName = ''
-
-    // if (!profileImage) {
-    //   imageName = ''
-    // } else {
-    //   imageName = Math.random().toString()
-    //   await profileImage.move(Application.publicPath('profilePictures'), {
-    //     name: imageName,
-    //   })
-    // }
-
-    /**
-     * Schema definition
-     */
-    // const newPostSchema = schema.create({
-    //   email: schema.string({ trim: true }),
-    // })
-
-    // const payload = await request.validate({
-    //   schema: newPostSchema,
-    //   messages: {
-    //     'email.required': 'Email is Required',
-    //   },
-    // })
-
-    //const hashedPassword = await Hash.make(payload.password)
-
-    let obj = {
+    let postObj = {
       post_text: request.all().post_text,
       user_id: request.all().user_id,
     }
-    return Post.create(obj)
+
+    return Post.create(postObj)
   }
 
   public async show({}: HttpContextContract) {
@@ -53,12 +27,39 @@ export default class PostsController {
           commentsReplyQuery.preload('user')
         })
       })
+      .preload('postImage')
       .orderBy('id', 'desc')
   }
+  
+  public async showAllPostsByUser({request}: HttpContextContract) {
+    return Post.query()
+      .preload('user')
+      .preload('like')
+      .preload('comment', (commentsQuery) => {
+        commentsQuery.preload('user')
+        commentsQuery.preload('commentReply', (commentsReplyQuery) => {
+          commentsReplyQuery.preload('user')
+        })
+      })
+      .preload('postImage')
+      .orderBy('id', 'desc')
+      .where('user_id', request.all().id)
+  }
+
 
   public async edit({}: HttpContextContract) {}
 
   public async update({}: HttpContextContract) {}
 
-  public async destroy({}: HttpContextContract) {}
+  public async destroy({request}: HttpContextContract) {
+    
+    let data = request.all()
+
+    for await (const iterator of data.postImage) {
+      // return iterator.post_image
+      await Drive.delete(iterator.post_image)
+    }
+    
+    return Post.query().where('id', data.id).delete()
+  }
 }
